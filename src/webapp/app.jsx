@@ -1,33 +1,20 @@
+/**
+ * @author Andres Felipe Gonzalez
+ * */
+'use strict';
+
 import React, {Component} from 'react';
 import {render} from 'react-dom';
 import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
-import {MuiThemeProvider, getMuiTheme} from 'material-ui/styles';
+import {MuiThemeProvider} from 'material-ui/styles';
+import muiTheme from './config/muiTheme';
 import FormTabs from './components/FormTabs';
 import JSONEditor from './components/JSONEditor';
 
 const store = createStore(reducers, {}, applyMiddleware(reduxThunk));
-const muiTheme = getMuiTheme({
-    palette : {
-        primary1Color : '#EAF4DC',
-        accent1Color : '#AED578'
-    },
-    tabs: {
-        primary1Color :'#D1E9B5',
-        textColor : '#555555',
-        alternateTextColor : '#555555',
-        selectedTextColor : '#555555',
-    },
-    inkBar: {
-        backgroundColor: '#AED578'
-    },
-    raisedButton : {
-        primaryColor : '#AED578',
-        secondaryColor: '#555456'
-    }
-});
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './styles/app.scss';

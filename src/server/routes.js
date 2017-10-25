@@ -24,4 +24,7 @@ module.exports = Router => {
     Router.route('/attributes')
         .post(attributeController.createAttribute)
         .get(attributeController.fetchAllAttributes);
+
+    Router.route('/attributes/bulk')
+        .post(attributeController.saveAttributesList);
 };

@@ -5,12 +5,12 @@
 
 import {SET_TABS_VALID, SET_TABS_INVALID} from './types';
 
-export function setTabsValid(valid) {
+export function setTabsValid(id, valid) {
     return dispatch => {
         if (valid) {
-            dispatch({type: SET_TABS_VALID});
+            dispatch({type: SET_TABS_VALID, payload : id});
         } else {
-            dispatch({type: SET_TABS_INVALID});
+            dispatch({type: SET_TABS_INVALID, payload: id});
         }
     }
 }

@@ -1,3 +1,8 @@
+/**
+ * @author Andres Felipe Gonzalez
+ * */
+'use strict';
+
 import React, {Component} from 'react';
 import Input from './commons/AttributeInput';
 import NumberInput from './commons/NumberInput';
@@ -5,10 +10,11 @@ import Select from './commons/SelectField';
 import InputFieldWithButton from './commons/InputFieldWithButton';
 import EnumerationsList from './commons/EnumerationsList';
 import {connect} from 'react-redux';
-import {changeAttrFieldValue} from '../actions/attributeActions';
+import {changeAttrFieldValue, removeAttribute} from '../actions/attributeActions';
 import {setTabsValid} from '../actions/tabsValidationActions';
+import {Dialog, RaisedButton} from 'material-ui';
 
-@connect(({misc, attributes}) => ({misc, attributes}), {changeAttrFieldValue, setTabsValid})
+@connect(({misc, attributes}) => ({misc, attributes}), {changeAttrFieldValue, setTabsValid, removeAttribute})
 export default class Attribute extends Component {
     constructor(props) {
         super(props);
@@ -16,11 +22,16 @@ export default class Attribute extends Component {
             contracted: true,
             dtObject: false,
             attribute: props.attributes.find(a => a._id === props.attribute),
-            nameValidationError : '',
-            rangeValidationError : '',
-            precisionValidationError : '',
-            accuracyValidationError : ''
+            nameValidationError: '',
+            rangeValidationError: '',
+            precisionValidationError: '',
+            accuracyValidationError: '',
+            removeDialogOpen: false
         };
+    }
+
+    toggleDialog() {
+        this.setState({removeDialogOpen: !this.state.removeDialogOpen});
     }
 
     expandAttribute() {
@@ -65,6 +76,9 @@ export default class Attribute extends Component {
                                 <EnumerationsList
                                     name="Values"
                                     enumerations={extraFields.enumerations}
+                                    onDeleteEnum={selectedEnum => changeAttrFieldValue(_id, 'extraFields', {
+                                        enumerations: extraFields.enumerations.filter(e => e !== selectedEnum)
+                                    })}
                                 />
                             </div>
                         </div>
@@ -145,56 +159,64 @@ export default class Attribute extends Component {
 
     }
 
-    componentWillReceiveProps(nextProps){
+    componentWillReceiveProps(nextProps) {
         const {attributes, setTabsValid} = nextProps;
         const {attribute} = this.state;
         let tabsValid = true;
-        if(attributes.find(a => a.name === '')){
+        if (attribute.name === '') {
             tabsValid = false;
-        }else
+        }
 
-        if(attributes.filter(a => a.name === attribute.name).length === 2){
+        let sameAttr = attributes.filter(a => attribute.name !== '' && a.name.toLowerCase() === attribute.name.toLowerCase());
+
+        if (sameAttr.length > 1) {
             tabsValid = false;
             this.setState({nameValidationError: 'Name must be unique'});
-        }else {
+        } else {
             this.setState({nameValidationError: ''});
         }
 
-        if(attribute.format === '59ee85f36f8a2224b4676dfa' && attribute.dataType === '59ee5a5c883b111e02c789e1'){
-            const {min , max, precision, accuracy} = attribute.extraFields;
+        if (attribute.format === '59ee85f36f8a2224b4676dfa' && attribute.dataType === '59ee5a5c883b111e02c789e1') {
+            const {min, max, precision, accuracy} = attribute.extraFields;
 
-            if(typeof min === 'number' && typeof max === 'number'){
-                if(min>max){
+            if (typeof min === 'number' && typeof max === 'number') {
+                if (min > max) {
                     tabsValid = false;
                     this.setState({rangeValidationError: 'Min must be lower than max'});
-                }else {
+                } else {
                     this.setState({rangeValidationError: ''});
-                    if(typeof precision !== 'number') tabsValid = false;
-                    else if(precision > (max - min)){
+                    if (typeof precision !== 'number') {
                         tabsValid = false;
-                        this.setState({precisionValidationError: `Precision must be lower than ${max - min}`});
-                    }else {
                         this.setState({precisionValidationError: ''});
                     }
-                    if(typeof accuracy !== 'number') tabsValid = false;
-                    else if(accuracy > (max - min)){
+                    else if (precision > (max - min)) {
                         tabsValid = false;
-                        this.setState({accuracyValidationError: `Accuracy must be lower than ${max - min}`});
-                    }else {
+                        this.setState({precisionValidationError: `Precision must be lower or equal than ${max - min}`});
+                    } else {
+                        this.setState({precisionValidationError: ''});
+                    }
+                    if (typeof accuracy !== 'number') {
+                        tabsValid = false;
+                        this.setState({accuracyValidationError: ''});
+                    }
+                    else if (accuracy > (max - min)) {
+                        tabsValid = false;
+                        this.setState({accuracyValidationError: `Accuracy must be lower or equal than ${max - min}`});
+                    } else {
                         this.setState({accuracyValidationError: ''});
                     }
                 }
-            }else{
+            } else {
                 tabsValid = false;
                 this.setState({
                     accuracyValidationError: '',
-                    precisionValidationError : ''
+                    precisionValidationError: ''
                 });
             }
 
 
         }
-        setTabsValid(tabsValid);
+        setTabsValid(attribute._id, tabsValid);
     }
 
     handleNameChange(e, name) {
@@ -224,7 +246,7 @@ export default class Attribute extends Component {
 
         if (format === '59ee85e86f8a2224b4676df9')
             changeAttrFieldValue(_id, 'extraFields', {enumerations: []});
-        if (format === '59ee85f36f8a2224b4676dfa')
+        else if (format === '59ee85f36f8a2224b4676dfa')
             changeAttrFieldValue(_id, 'extraFields', {
                 min: "",
                 max: "",
@@ -233,18 +255,19 @@ export default class Attribute extends Component {
                 accuracy: ''
 
             });
+        else changeAttrFieldValue(_id, 'extraFields', {});
         changeAttrFieldValue(_id, 'format', format);
     }
 
     render() {
-        const {misc, attributes, changeAttrFieldValue,} = this.props;
+        const {misc, attributes, changeAttrFieldValue, removeAttribute} = this.props;
         const attribute = attributes.find(attr => attr._id === this.props.attribute);
         const {contracted, dtObject} = this.state;
 
         return (
             <section className={`attributeContainer ${contracted ? 'contractedAttribute' : ''}`}>
                 {this.toggleExpandAttButton()}
-                <div className="removeAttrButton">
+                <div className="removeAttrButton" onClick={() => this.toggleDialog()}>
                     <i className="material-icons">delete_forever</i>
                 </div>
                 <div className="row">
@@ -309,6 +332,29 @@ export default class Attribute extends Component {
                     </div>
                 </div>
                 {this.renderExtraFields(attribute)}
+                <Dialog
+                    title="Delete Confirmation"
+                    modal={false}
+                    actions={<div>
+                        <RaisedButton
+                            label="CANCEL"
+                            secondary
+                            style={{marginRight: 10}}
+                            onClick={() => this.toggleDialog()}
+                        />
+                        <RaisedButton
+                            label="DELETE"
+                            primary
+                            onClick={() => {
+                                this.toggleDialog();
+                                removeAttribute(attribute._id);
+                            }}
+                        />
+                    </div>}
+                    open={this.state.removeDialogOpen}
+                >
+                    Do you want to remove the selected attribute?
+                </Dialog>
 
             </section>
         );

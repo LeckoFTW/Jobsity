@@ -5,7 +5,7 @@
 
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import Attribute from './Attribute';
+import Attribute from './AttributeForm';
 import {addAttribute} from '../actions/attributeActions';
 
 @connect(({attributes}) => ({attributes}), {addAttribute})

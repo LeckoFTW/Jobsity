@@ -6,7 +6,8 @@
 import {
     FETCH_ATTRIBUTES,
     CHANGE_ATTRIBUTE_FIELD_VALUE,
-    ADD_ATTRIBUTE
+    ADD_ATTRIBUTE,
+    REMOVE_ATTRIBUTE
 } from '../actions/types';
 
 export default function (state = [], action) {
@@ -21,7 +22,10 @@ export default function (state = [], action) {
             });
             return newState;
         case ADD_ATTRIBUTE :
-            return [...state, action.payload];
+            let a = [...state, action.payload];
+            return a;
+        case REMOVE_ATTRIBUTE:
+            return state.filter(attr => attr._id !== action.payload);
         default :
             return state;
     }

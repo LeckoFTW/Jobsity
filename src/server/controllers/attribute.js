@@ -17,5 +17,13 @@ module.exports = {
         Attribute.find({})
             .then(attributes => res.json(attributes))
             .catch(err => res.status(500).json(err));
+    },
+
+    saveAttributesList(req, res){
+        Attribute.remove({})
+            .then(()=>  Attribute.create(req.body))
+            .then(attributes => res.json(attributes))
+            .catch(err => res.status(500).json(err));
+
     }
 };

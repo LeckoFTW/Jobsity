@@ -6,6 +6,7 @@
 const mongoose = require('mongoose');
 
 const attributeSchema = new mongoose.Schema({
+    _id : {type : mongoose.Schema.Types.ObjectId, required:true},
     name : {type : String, require: true},
     description : {type : String, require: true},
     device : {type : String, default : ''},
@@ -15,15 +16,6 @@ const attributeSchema = new mongoose.Schema({
     format : {type : mongoose.Schema.Types.ObjectId, ref : 'Format'},
     extraFields : {type : Object}
 
-});
+}, {versionKey: false});
 
 module.exports = mongoose.model('Attribute', attributeSchema);
-
-/*
-*   {
-*       name : "Nombre",
-*       description : "Nombre del usuario",
-*       defaultValue : "Andres"
-*
-*
-* */

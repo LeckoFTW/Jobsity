@@ -1,3 +1,8 @@
+/**
+ * @author Andres Felipe Gonzalez
+ * */
+'use strict';
+
 import {combineReducers} from 'redux';
 import miscReducer from './miscReducer';
 import attributesReducer from './attributesReducer';

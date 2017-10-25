@@ -1,3 +1,8 @@
+/**
+ * @author Andres Felipe Gonzalez
+ * */
+'use strict';
+
 import {FECTH_DATATYPES, FETCH_CATEGORIES, FETCH_FORMATS} from './types';
 import axios from 'axios';
 

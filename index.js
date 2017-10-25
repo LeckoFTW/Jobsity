@@ -7,7 +7,7 @@ const webpackConfig = require('./webpack.config');
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/jobcity', {
+mongoose.connect('mongodb://andres:andres@ds235065.mlab.com:35065/jobsity', {
    useMongoClient : true
 }, err => {
     if(err) console.log(err);
