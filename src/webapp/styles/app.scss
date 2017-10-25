@@ -1,0 +1,141 @@
+.jsoneditor{
+  border: 1px solid #555456 !important;
+}
+
+.jsoneditor-menu{
+  background-color: #555456 !important;
+  border-bottom: 1px solid #555456 !important;
+}
+
+
+
+.attributeSection {
+  border: 1px solid #AECA7C;
+  .categoryDesc{
+    padding: 20px 40px;
+    text-align: justify;
+  }
+
+}
+.categoryFooter{
+  height: 50px;
+  background-color: #eaf5dc;
+  border-bottom: 1px solid #adca7c;
+  border-left: 1px solid #adca7c;
+  border-right: 1px solid #adca7c;
+  display: flex;
+  padding: 0 30px;
+
+  .addAttr{
+    display: flex;
+    align-self: center;
+    height: 30px;
+    align-items: center;
+    cursor: pointer;
+    color: #8DC730;
+    font-weight: 600;
+    .material-icons{
+      margin-right: 5px;
+    }
+  }
+}
+
+.buttonsContainer{
+  float: right;
+  margin-top: 20px;
+}
+
+.attributeContainer {
+  padding: 20px 40px;
+  position: relative;
+  border-top: 1px solid #AEAEAE;
+
+  .expandButton , .removeAttrButton{
+    background-color: rgb(85, 84, 86);
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    position: absolute;
+    top: 10px;
+    z-index: 1;
+    .material-icons {
+      cursor: pointer;
+      color: white !important;
+    }
+  }
+
+  .expandButton {
+    right: 10px;
+  }
+
+  .removeAttrButton{
+    right: 45px;
+  }
+}
+
+.contractedAttribute {
+  height: 135px;
+  overflow: hidden;
+}
+
+.attributeFieldContainer {
+  margin-top: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  label {
+    font-family: Roboto, sans-serif;
+  }
+
+  .enumValue {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    border-radius: 5px;
+    padding: 5px 10px;
+    background-color: #f2f2f2;
+    margin-bottom: 5px;
+
+    .material-icons {
+      margin-left: 5px !important;
+      cursor: pointer;
+    }
+  }
+
+  .inputButtonContainer {
+    display: flex;
+    button {
+      height: 100% !important;
+    }
+    .asd {
+      flex: 1;
+      background-color: #F2F2F2 !important;
+
+      input {
+        padding: 0 10px !important;
+      }
+      hr {
+        bottom: 0 !important;
+      }
+    }
+  }
+
+  .textInput {
+    width: 100% !important;
+    background-color: #F2F2F2 !important;
+    div[style="cursor: pointer; height: 100%; position: relative; width: 100%;"],
+    div[style="color: rgba(0, 0, 0, 0.3); height: 56px; line-height: 56px; overflow: hidden; opacity: 1; position: relative; padding-left: 0px; padding-right: 56px; text-overflow: ellipsis; top: -4px; white-space: nowrap;"]{
+      padding: 0 10px !important;
+    }
+    input {
+      padding: 0 10px !important;
+    }
+    hr {
+      bottom: 0px !important;
+    }
+  }
+}
+
