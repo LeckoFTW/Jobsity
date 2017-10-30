@@ -3,73 +3,67 @@
  * */
 'use strict';
 
+/* Dependencies delclaration */
+/* Action types */
 import {
-    FETCH_ATTRIBUTES,
-    CHANGE_ATTRIBUTE_FIELD_VALUE,
-    ADD_ATTRIBUTE,
-    REMOVE_ATTRIBUTE,
+  CHANGE_ATTRIBUTE_FIELD_VALUE,
+  ADD_ATTRIBUTE,
+  REMOVE_ATTRIBUTE,
 } from './types';
-
-import axios from 'axios';
+/* Utils */
 import ObjectId from 'bson-objectid';
 
-export function fetchAttributes() {
-    return dispatch => {
-        axios.get('http://localhost:3001/api/attributes')
-            .then(({data}) => {
-                dispatch({
-                    type: FETCH_ATTRIBUTES,
-                    payload: data
-                })
-            })
-    };
-}
 
+/**
+ * Action creator that change a attribute field value
+ * @param {String} id - attribute id
+ * @param {String} field - attribute field name
+ * @param value - new field value
+ * */
 export function changeAttrFieldValue(id, field, value) {
-    return {
-        type: CHANGE_ATTRIBUTE_FIELD_VALUE,
-        payload: {
-            id,
-            field,
-            value
-        }
+  return {
+    type: CHANGE_ATTRIBUTE_FIELD_VALUE,
+    payload: {
+      id,
+      field,
+      value
     }
+  }
 }
 
+/**
+ * Action creator that creates a new attribute in attributes list
+ * @param {String} category - Category name
+ * */
 export function addAttribute(category) {
-    return {
-        type: ADD_ATTRIBUTE,
-        payload: {
-            _id: ObjectId().str,
-            name: "",
-            description: "",
-            dataType: "59ee5a5c883b111e02c789e1",
-            format: "59ee85e86f8a2224b4676df9",
-            category: category,
-            extraFields: {
-                enumerations: []
-            },
-            defaultValue: "",
-            device: ""
-        }
-
+  return {
+    type: ADD_ATTRIBUTE,
+    payload: {
+      _id: ObjectId().str,
+      name: "",
+      description: "",
+      dataType: "STRING",
+      format: "NONE",
+      category: category,
+      enumerations: [],
+      min: null,
+      max: null,
+      unitOfMeasurement: null,
+      precision: null,
+      accuracy: null,
+      defaultValue: "",
+      device: ""
     }
+  }
 }
 
+/**
+ * Action creator that removes an attribute from attributes list
+ * @param {String} id - Attribute id
+ * */
 export function removeAttribute(id) {
-    return {
-        type: REMOVE_ATTRIBUTE,
-        payload: id
-    }
-}
-
-export function saveAttributesList(cb) {
-    return (dispatch, getState) => {
-        const {attributes} = getState();
-        axios.post('http://localhost:3001/api/attributes/bulk', attributes)
-            .then(() => {
-                cb();
-            })
-            .catch(err => console.log(err));
-    }
+  return {
+    type: REMOVE_ATTRIBUTE,
+    payload: id
+  }
 }

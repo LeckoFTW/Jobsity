@@ -3,91 +3,72 @@
  * */
 'use strict';
 
+/* Dependencies declaration*/
+/* React */
 import React, {Component} from 'react';
-import {Tabs, Tab, RaisedButton} from 'material-ui';
-import CategoryTab from './CategoryTab';
+/* Redux */
 import {connect} from 'react-redux';
-import {fetchDataTypes, fetchCategories, fetchFormats} from '../actions/miscActions';
-import {fetchAttributes, saveAttributesList} from '../actions/attributeActions';
-import {Dialog} from 'material-ui';
+/* Materail design*/
+import {Tabs, Tab, RaisedButton} from 'material-ui';
+/* Components */
+import CategoryTab from './CategoryTab';
+/* Utils */
 import _ from 'lodash';
+/* Styling */
+import '../styles/tabs.scss';
 
-@connect(({misc, validTabs}) => ({misc, validTabs}), {
-    fetchDataTypes,
-    fetchAttributes,
-    fetchCategories,
-    fetchFormats,
-    saveAttributesList
-})
+@connect(({misc, validTabs}) => ({misc, validTabs}))
+/**
+ * Component that renders the categories main box
+ * */
 export default class FormTabs extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            savedDataConfirmation: false
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      savedDataConfirmation: false
     }
+  }
 
-    toggleDialog() {
-        this.setState({
-            savedDataConfirmation: !this.state.savedDataConfirmation
-        });
-    }
-
-
-    componentWillMount() {
-        const {fetchDataTypes, fetchAttributes, fetchCategories, fetchFormats} = this.props;
-        fetchDataTypes();
-        fetchAttributes();
-        fetchCategories();
-        fetchFormats();
-    }
-
-
-    renderCategories() {
-        const {misc: {categories}} = this.props;
-        if (categories.length) {
-            return categories.map(category => {
-                return (
-                    <Tab label={category.name} key={category._id}>
-                        <CategoryTab category={category}/>
-                    </Tab>
-                )
-            });
-        }
-    }
-
-    render() {
-        const {validTabs, saveAttributesList} = this.props;
-        let valid = _.values(validTabs).every(i=>i);
+  /**
+   * Helper function that divide the attributes list into categories
+   * and renders them
+   * */
+  renderCategories() {
+    const {misc: {categories}} = this.props;
+    if (categories.length) {
+      return categories.map(category => {
         return (
-            <div>
-                <Tabs>
-                    {this.renderCategories()}
-                </Tabs>
-                <div className="buttonsContainer">
-                    <RaisedButton label="CANCEL" secondary style={{marginRight: 10}}/>
-                    <RaisedButton
-                        label="SAVE"
-                        primary
-                        disabled={!valid}
-                        onClick={() => saveAttributesList(() => this.toggleDialog())}
-                    />
-                </div>
-                <Dialog
-                    actions={
-                        <RaisedButton
-                            label="OK"
-                            primary
-                            onClick={() => this.toggleDialog()}
-                        />
-                    }
-                    modal={false}
-                    open={this.state.savedDataConfirmation}
-                >
-                    Attributes list saved!!
-                </Dialog>
-            </div>
+          <Tab label={category._id} key={category._id}>
+            <CategoryTab category={category}/>
+          </Tab>
         )
+      });
     }
+  }
+
+  render() {
+    const {validTabs} = this.props;
+    const valid = _.values(validTabs).every(i => i);
+    return (
+      <div id="tabsContainer">
+        <Tabs className="tabsContent">
+          {this.renderCategories()}
+        </Tabs>
+        <div className="buttonsContainer">
+          <RaisedButton
+            label="CANCEL"
+            secondary
+            className="secondaryButton"
+          />
+          <RaisedButton
+            label="SAVE"
+            primary
+            disabled={!valid}
+            onClick={() => console.log('save')}
+          />
+        </div>
+      </div>
+    )
+  }
 }
 

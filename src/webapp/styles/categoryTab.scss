@@ -1,0 +1,52 @@
+.categorySection {
+  border: 1px solid #AECA7C;
+  height: 100%;
+  .categoryDesc {
+    padding: 20px 40px;
+    text-align: justify;
+    border-bottom: 1px solid #AEAEAE;
+    height: 117px;
+    display: flex;
+    align-items: center;
+  }
+  .categoryAttributes {
+    height: calc(100% - 166px);
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: darkgrey;
+      outline: 1px solid slategrey;
+    }
+  }
+  .categoryFooter {
+    height: 50px;
+    background-color: #eaf5dc;
+    border: 1px solid #adca7c;
+    display: flex;
+    padding: 0 30px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    .addAttr {
+      display: flex;
+      align-self: center;
+      height: 30px;
+      align-items: center;
+      cursor: pointer;
+      color: #8DC730;
+      font-weight: 600;
+      .material-icons {
+        margin-right: 5px;
+      }
+    }
+  }
+}

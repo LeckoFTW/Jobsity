@@ -1,0 +1,16 @@
+#tabsContainer{
+  .tabsContent {
+    height: calc(100% - 56px);
+    & > div:last-child {
+      height: calc(100% - 50px);
+      & > div {
+        height: 100%;
+      }
+    }
+  }
+
+  .buttonsContainer {
+    float: right;
+    margin-top: 20px;
+  }
+}
