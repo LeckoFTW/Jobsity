@@ -17,11 +17,11 @@ import {
 export default function (state = [], action) {
   switch (action.type) {
     case FECTH_DATATYPES:
-      return {...state, dataTypes: action.payload};
+      return { ...state, dataTypes: action.payload };
     case FETCH_CATEGORIES:
-      return {...state, categories: action.payload};
+      return { ...state, categories: action.payload };
     case FETCH_FORMATS :
-      return {...state, formats: action.payload};
+      return { ...state, formats: action.payload };
     default :
       return state;
   }

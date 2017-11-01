@@ -15,11 +15,11 @@ import {
  * @param {Boolean} valid - validity of attribute form
  * */
 export function setTabsValid(id, valid) {
-    return dispatch => {
-        if (valid) {
-            dispatch({type: SET_TABS_VALID, payload : id});
-        } else {
-            dispatch({type: SET_TABS_INVALID, payload: id});
-        }
+  return dispatch => {
+    if (valid) {
+      dispatch({ type: SET_TABS_VALID, payload: id });
+    } else {
+      dispatch({ type: SET_TABS_INVALID, payload: id });
     }
+  }
 }

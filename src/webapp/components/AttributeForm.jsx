@@ -5,23 +5,27 @@
 
 /* Dependencies declaration*/
 /* React */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 /* Material design */
-import {Dialog, RaisedButton} from 'material-ui';
+import { Dialog, RaisedButton } from 'material-ui';
 /* Redux */
-import {connect} from 'react-redux';
-import {changeAttrFieldValue, removeAttribute} from '../actions/attributeActions';
-import {setTabsValid} from '../actions/tabsValidationActions';
+import { connect } from 'react-redux';
+import { changeAttrFieldValue, removeAttribute } from '../actions/attributeActions';
+import { setTabsValid } from '../actions/tabsValidationActions';
 /* Components */
-import Input from './commons/AttributeInput';
+import Input from './common/AttributeInput';
 import AttributeExtraFields from './AttributeExtraFields';
-import Select from './commons/SelectField';
+import Select from './common/SelectField';
 /* Utils */
-import formValidator from '../utils/attributeFormValidator';
+import { validateAttribute } from '../utils/validator';
 /* Styling */
 import '../styles/attributeForm.scss';
 
-@connect(({misc, attributes}) => ({misc, attributes}), {changeAttrFieldValue, setTabsValid, removeAttribute})
+@connect(({ misc, attributes, attributedEdited }, ownProps) => ({
+  misc,
+  attributes,
+  attributedEdited
+}), { changeAttrFieldValue, setTabsValid, removeAttribute })
 /**
  * Component that show the attribute form and set the validation for all fields
  * */
@@ -31,7 +35,6 @@ export default class Attribute extends Component {
     this.state = {
       contracted: true,
       dtObject: false,
-      attribute: props.attributes.find(a => a._id === props.attribute),
       nameValidationError: '',
       rangeValidationError: '',
       precisionValidationError: '',
@@ -41,32 +44,48 @@ export default class Attribute extends Component {
   }
 
   /**
+   * determines if the component will be updated.
+   * */
+  shouldComponentUpdate(nextProps, nextState) {
+    const { attributedEdited } = nextProps;
+    const { contracted, removeDialogOpen } = nextState;
+    return attributedEdited ?
+      attributedEdited === this.props.attribute._id ||
+      contracted !== this.state.contracted ||
+      removeDialogOpen !== this.state.removeDialogOpen : true;
+  }
+
+  /**
    * Show or hide the delete confirmation modal when the user clicks on remove attribute button
    * */
   toggleDialog() {
-    this.setState({removeDialogOpen: !this.state.removeDialogOpen});
+    this.setState({ removeDialogOpen: !this.state.removeDialogOpen });
   }
 
   /**
    * Change the attribute state between contracted and expanded
    * */
   expandAttribute() {
-    this.setState({contracted: !this.state.contracted});
+    this.setState({ contracted: !this.state.contracted });
   }
 
   /**
    * Call the action creator for change and attribute field value
    * */
   changeFieldValue(field, value) {
-    const {changeAttrFieldValue} = this.props;
-    changeAttrFieldValue(this.state.attribute._id, field, value);
+    const { changeAttrFieldValue } = this.props;
+    changeAttrFieldValue(this.props.attribute._id, field, value);
+    const { attributes, setTabsValid, attribute } = this.props;
+    const { isValid, errors } = validateAttribute(attribute, attributes);
+    setTabsValid(attribute._id, isValid);
+    this.setState({ ...errors });
   }
 
   /**
    * Validate the contracted state of the attribute and render the corresponding button
    * */
   toggleExpandAttButton() {
-    const {contracted} = this.state;
+    const { contracted } = this.state;
     if (contracted) return (
       <div className="expandButton">
         <div className="material-icons" onClick={this.expandAttribute.bind(this)}>expand_more</div>
@@ -80,40 +99,18 @@ export default class Attribute extends Component {
   }
 
   /**
-   * react hook that validate the attribute form values to activate or deactivare global save button
-   * and if the form has error then show them in the form
-   * */
-  componentWillReceiveProps(nextProps) {
-    const {attributes, setTabsValid} = nextProps;
-    const {attribute} = this.state;
-    this.setState({
-      nameValidationError: '',
-      rangeValidationError: '',
-      precisionValidationError: '',
-      accuracyValidationError: ''
-    });
-    formValidator(attribute, attributes)
-      .then(setTabsValid(attribute._id, true))
-      .catch(errors => {
-        this.setState({...errors});
-        setTabsValid(attribute._id, false);
-      });
-
-  }
-
-  /**
    * handle the event when user change the attribute datatype select box and validate the new value
    * */
   handleDataTypeChange(e, index, dataType) {
     if (dataType === 'OBJECT') {
-      this.setState({dtObject: true});
+      this.setState({ dtObject: true });
       this.changeFieldValue('defaultValue', '');
       this.changeFieldValue('format', 'NONE');
-      this.changeFieldValue(['min', 'max', 'unitOfMeasurement', 'precision', 'accuracy'], null);
+      this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
       this.changeFieldValue('enumerations', []);
 
     } else {
-      this.setState({dtObject: false});
+      this.setState({ dtObject: false });
     }
     this.changeFieldValue('dataType', dataType);
   }
@@ -122,12 +119,12 @@ export default class Attribute extends Component {
    * handle the event when user change the attribute format select box and validate the new value
    * */
   handleFormatChange(e, index, format) {
-    if (this.state.attribute.format !== format) {
+    if (this.props.attribute.format !== format) {
       if (format === 'NUMBER') {
-        this.changeFieldValue(['min', 'max', 'unitOfMeasurement', 'precision', 'accuracy'], '');
+        this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], '');
       }
       else {
-        this.changeFieldValue(['min', 'max', 'unitOfMeasurement', 'precision', 'accuracy'], null);
+        this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
       }
       this.changeFieldValue('enumerations', []);
       this.changeFieldValue('format', format);
@@ -135,8 +132,8 @@ export default class Attribute extends Component {
   }
 
   render() {
-    const {misc, removeAttribute} = this.props;
-    const {contracted, dtObject, attribute} = this.state;
+    const { misc, removeAttribute, attribute } = this.props;
+    const { contracted, dtObject } = this.state;
 
     return (
       <section className={`attributeContainer ${contracted ? 'contractedAttribute' : ''}`}>
@@ -169,7 +166,7 @@ export default class Attribute extends Component {
             <Select
               name="Device Resource Type"
               onChange={() => console.log()}
-              items={[{value: 1, text: 'Default Value'}]}
+              items={[ { value: 1, text: 'Default Value' } ]}
               placeholder="Default Value"
               disabled
             />
@@ -189,7 +186,7 @@ export default class Attribute extends Component {
             <Select
               name="Data Type"
               onChange={this.handleDataTypeChange.bind(this)}
-              items={misc.dataTypes.map(d => ({value: d, text: d}))}
+              items={misc.dataTypes.map(d => ({ value: d, text: d }))}
               placeholder="Default Value"
               value={attribute.dataType}
             />
@@ -198,7 +195,7 @@ export default class Attribute extends Component {
             <Select
               name="Format"
               onChange={this.handleFormatChange.bind(this)}
-              items={misc.formats.map(f => ({value: f, text: f}))}
+              items={misc.formats.map(f => ({ value: f, text: f }))}
               placeholder="Default Value"
               value={attribute.format}
               disabled={dtObject}

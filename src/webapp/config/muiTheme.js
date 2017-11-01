@@ -5,7 +5,7 @@
 
 /* Dependencies declaration */
 /* Material design */
-import {getMuiTheme} from 'material-ui/styles';
+import { getMuiTheme } from 'material-ui/styles';
 
 /* Exports the global material design components configuration*/
 export default getMuiTheme({

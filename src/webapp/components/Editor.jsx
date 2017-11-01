@@ -5,15 +5,15 @@
 
 /* Dependencies declaration*/
 /* React */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 /* Redux */
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 /* Editor library*/
 import JSONEditor from 'jsoneditor';
 /* Styling */
 import '../styles/editor.scss';
 
-@connect(({misc, attributes}) => ({misc, attributes}))
+@connect(({ misc, attributes }) => ({ misc, attributes }))
 /**
  * Component that render a jsoneditor box and display the internal object that manages the
  * attributes list
@@ -28,7 +28,7 @@ export default class Editor extends Component {
    * */
   componentDidMount() {
     const container = document.getElementById("jsoneditor");
-    const options = {mode: 'code'};
+    const options = { mode: 'code' };
     this.setState({
       editor: new JSONEditor(container, options)
     });
@@ -38,8 +38,8 @@ export default class Editor extends Component {
    * react hook that updates the editor box content
    * */
   componentDidUpdate() {
-    const {attributes} = this.props;
-    const {editor} = this.state;
+    const { attributes } = this.props;
+    const { editor } = this.state;
     editor.set(attributes);
   }
 

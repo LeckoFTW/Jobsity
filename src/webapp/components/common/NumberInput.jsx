@@ -5,9 +5,11 @@
 
 /* Dependencies declaration*/
 /* React */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 /* Material design */
-import {TextField} from 'material-ui';
+import { TextField } from 'material-ui';
+/* Utils */
+import { isEmpty, isNumberFormat } from '../../utils/validator';
 
 /**
  * Component that renders an Material NumberInput
@@ -21,34 +23,27 @@ export default class NumberInput extends Component {
    * Handle event for input text change and validate the new value
    * */
   handleChange(e, value) {
-    const {onChange, required, min, max} = this.props;
-    if (required && !value) {
-      this.setState({errorText: 'this field is required'});
+    const { onChange, required } = this.props;
+    let errorText = '';
+    if (required && isEmpty(value)) {
+      errorText = 'this field is required';
       onChange(e, value);
     }
     else {
-      if (!value.match(/^\d+(\.+\d{1,})?$/)) {
-        this.setState({errorText: 'Only numbers'});
-        onChange(e, value);
+      if (isNumberFormat(value)) {
+        onChange(e, parseFloat(value));
       } else {
-        const numeric = parseFloat(value);
-        if (min && numeric < min) {
-          this.setState({errorText: 'Must be greater than ' + min});
-        } else if (max && numeric > max) {
-          this.setState({errorText: 'Must be lower than ' + max});
-        } else {
-          this.setState({errorText: ''})
-        }
-        onChange(e, numeric);
+        errorText = 'Only numbers';
+        onChange(e, value);
       }
-
     }
+    this.setState({ errorText });
 
   }
 
   render() {
-    const {name, value, placeholder, className, disabled, errMessage} = this.props;
-    const {errorText} = this.state;
+    const { name, value, placeholder, className, disabled, errMessage } = this.props;
+    const { errorText } = this.state;
     return (
       <div className={`attributeFieldContainer ${className ? className : ''}`}>
         <label>{name ? `${name}:` : ':'}</label>
@@ -56,7 +51,7 @@ export default class NumberInput extends Component {
           id={name}
           name={name}
           hintText={placeholder}
-          hintStyle={{paddingLeft: 10, paddingRight: 10}}
+          hintStyle={{ paddingLeft: 10, paddingRight: 10 }}
           className="textInput"
           onChange={this.handleChange.bind(this)}
           value={value}

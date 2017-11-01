@@ -7,15 +7,15 @@
 /* React */
 import React from 'react';
 /* Components */
-import InputFieldWithButton from './commons/InputFieldWithButton';
-import EnumerationsList from './commons/EnumerationsList';
-import NumberInput from './commons/NumberInput';
-import Input from './commons/AttributeInput';
+import InputFieldWithButton from './common/InputFieldWithButton';
+import EnumerationsList from './common/EnumerationsList';
+import NumberInput from './common/NumberInput';
+import Input from './common/AttributeInput';
 
 /**
  * Component that render format:NONE enumerations or format:NUMBER fields
  * */
-const AttributeExtraFields = ({attribute, changeFieldValue, state}) => {
+const AttributeExtraFields = ({ attribute, changeFieldValue, state }) => {
   const {
     dataType,
     format,

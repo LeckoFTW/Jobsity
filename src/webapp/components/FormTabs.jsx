@@ -5,11 +5,11 @@
 
 /* Dependencies declaration*/
 /* React */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 /* Redux */
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 /* Materail design*/
-import {Tabs, Tab, RaisedButton} from 'material-ui';
+import { Tabs, Tab, RaisedButton } from 'material-ui';
 /* Components */
 import CategoryTab from './CategoryTab';
 /* Utils */
@@ -17,7 +17,7 @@ import _ from 'lodash';
 /* Styling */
 import '../styles/tabs.scss';
 
-@connect(({misc, validTabs}) => ({misc, validTabs}))
+@connect(({ misc, validTabs }) => ({ misc, validTabs }))
 /**
  * Component that renders the categories main box
  * */
@@ -25,7 +25,7 @@ export default class FormTabs extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      savedDataConfirmation: false
+      savedDataConfirmation: true
     }
   }
 
@@ -34,11 +34,11 @@ export default class FormTabs extends Component {
    * and renders them
    * */
   renderCategories() {
-    const {misc: {categories}} = this.props;
+    const { misc: { categories } } = this.props;
     if (categories.length) {
       return categories.map(category => {
         return (
-          <Tab label={category._id} key={category._id}>
+          <Tab label={category} key={category}>
             <CategoryTab category={category}/>
           </Tab>
         )
@@ -47,7 +47,7 @@ export default class FormTabs extends Component {
   }
 
   render() {
-    const {validTabs} = this.props;
+    const { validTabs } = this.props;
     const valid = _.values(validTabs).every(i => i);
     return (
       <div id="tabsContainer">

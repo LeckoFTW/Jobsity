@@ -7,10 +7,10 @@
 /* React */
 import React from 'react';
 /* Material design */
-import {FontIcon} from 'material-ui';
-import {red500} from 'material-ui/styles/colors';
+import { FontIcon } from 'material-ui';
+import { red500 } from 'material-ui/styles/colors';
 
-const EnumerationsList = ({name, enumerations, onDeleteEnum}) => (
+const EnumerationsList = ({ name, enumerations, onDeleteEnum }) => (
   <div className={`attributeFieldContainer`}>
     <label>{name}:</label>
     <div>

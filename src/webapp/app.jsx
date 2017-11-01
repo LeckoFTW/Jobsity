@@ -6,15 +6,15 @@
 /* Dependencies declaration */
 
 /* React */
-import React, {Component} from 'react';
-import {render} from 'react-dom';
+import React, { Component } from 'react';
+import { render } from 'react-dom';
 /* Redux */
-import {createStore, applyMiddleware} from 'redux';
-import {Provider} from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
 import reduxThunk from 'redux-thunk';
 import reducers from './reducers';
 /* Material desing*/
-import {MuiThemeProvider} from 'material-ui/styles';
+import { MuiThemeProvider } from 'material-ui/styles';
 import muiTheme from './config/muiTheme';
 /* Components */
 import FormTabs from './components/FormTabs';
@@ -24,7 +24,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './styles/app.scss';
 import mockData from './mock';
 
-const store = createStore(reducers, {...mockData}, applyMiddleware(reduxThunk));
+const store = createStore(reducers, { ...mockData }, applyMiddleware(reduxThunk));
 
 /**
  * Main Component
