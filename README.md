@@ -21,8 +21,13 @@ you should see the messages :
 
 Then you will be able to access the app in the displayed url
 
-## Fixes from last version
-- Validation for precision and accuracy fields
-- Project structuration and documentation.
-- Mock data instead nodejs server
-- UI fixes
+## Fixes 
+
+- v2
+  - Validation for precision and accuracy fields
+  - Project structuration and documentation.
+  - Mock data instead nodejs server
+  - UI fixes
+- v3
+  - performance
+  - validations
