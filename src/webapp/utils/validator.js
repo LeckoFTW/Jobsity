@@ -17,9 +17,10 @@ export function validateAttribute(attribute, attributes) {
   };
   const { name, min, max, precision, accuracy } = attribute;
 
-  const validName = !isEmpty(name);
+  let validName = !isEmpty(name);
   if (validName){
     if(attributes.filter(a => a.name.toLowerCase() === attribute.name.toLowerCase()).length > 1){
+      validName = false;
       errors.nameValidationError = 'Name already exists';
     }
   }
@@ -28,16 +29,18 @@ export function validateAttribute(attribute, attributes) {
     if (isNumber(min) && isNumber(max)) {
       if (max > min) {
         errors.rangeValidationError = '';
-        const validPrecision = isNumber(precision);
+        let validPrecision = isNumber(precision);
         if (validPrecision){
           if(!isRangeMod(min, max, precision)){
+            validPrecision = false;
             errors.precisionValidationError = 'Invalid Precision';
           }
         }
 
-        const validAccuracy = isNumber(accuracy);
+        let validAccuracy = isNumber(accuracy);
         if (validAccuracy){
           if(!isRangeMod(min, max, accuracy)){
+            validAccuracy = false;
             errors.accuracyValidationError = 'Invalid Accuracy';
           }
         }
