@@ -9,40 +9,47 @@
  * @param {Array} attributes - Application attributes list
  * */
 export function validateAttribute(attribute, attributes) {
-  let errors = {};
+  let errors = {
+    nameValidationError : '',
+    rangeValidationError : '',
+    precisionValidationError : '',
+    accuracyValidationError : ''
+  };
   const { name, min, max, precision, accuracy } = attribute;
 
-  let validName = !isEmpty(name);
-  if (validName)
-    errors.nameValidationError = attributes.filter(a => a.name.toLowerCase() === attribute.name.toLowerCase()).length < 2 ? '' : 'Name already exists';
+  const validName = !isEmpty(name);
+  if (validName){
+    if(attributes.filter(a => a.name.toLowerCase() === attribute.name.toLowerCase()).length > 1){
+      errors.nameValidationError = 'Name already exists';
+    }
+  }
 
   if (attribute.format === 'NUMBER' && attribute.dataType === 'STRING') {
     if (isNumber(min) && isNumber(max)) {
       if (max > min) {
         errors.rangeValidationError = '';
         const validPrecision = isNumber(precision);
-        if (validPrecision)
-          errors.precisionValidationError = isRangeMod(min, max, precision) ? '' : 'Invalid Precision';
+        if (validPrecision){
+          if(!isRangeMod(min, max, precision)){
+            errors.precisionValidationError = 'Invalid Precision';
+          }
+        }
 
         const validAccuracy = isNumber(accuracy);
-        if (validAccuracy)
-          errors.accuracyValidationError = isRangeMod(min, max, accuracy) ? '' : 'Invalid Accuracy';
+        if (validAccuracy){
+          if(!isRangeMod(min, max, accuracy)){
+            errors.accuracyValidationError = 'Invalid Accuracy';
+          }
+        }
 
         return { isValid: (validName && validPrecision && validAccuracy), errors };
       } else {
-        errors = {
-          ...errors,
-          rangeValidationError : 'Min must be lower than max',
-          precisionValidationError : '',
-          accuracyValidationError : ''
-        };
-
+        errors.rangeValidationError = 'Min must be lower than max';
         return { isValid: false, errors };
       }
     } else {
       return { isValid: false, errors };
     }
-
   } else {
     return { isValid: validName, errors }
   }
