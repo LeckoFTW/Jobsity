@@ -6,7 +6,7 @@ This is the final version of my Jobsity challenge solution.
 
 **npm** - 5.3.0
 
-##Installation
+## Installation
 
 For run the app, in a terminal execute next steps:
 
@@ -21,7 +21,7 @@ you should see the messages :
 
 Then you will be able to access the app in the displayed url
 
-##Fixes from last version
+## Fixes from last version
 - Validation for precision and accuracy fields
 - Project structuration and documentation.
 - Mock data instead nodejs server
