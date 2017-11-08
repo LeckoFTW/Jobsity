@@ -22,7 +22,7 @@ export default function (state = [], action) {
       return action.payload;
     case CHANGE_ATTRIBUTE_FIELD_VALUE:
       const { id, field, value } = action.payload;
-      const attribute = state.find(a => a._id === id);
+      const attribute = state.find(attribute => attribute._id === id);
       if (Array.isArray(field)) {
         field.forEach(fieldName => attribute[ fieldName ] = value);
       } else {
@@ -30,8 +30,7 @@ export default function (state = [], action) {
       }
       return [ ...state ];
     case ADD_ATTRIBUTE :
-      const a = [ ...state, action.payload ];
-      return a;
+      return [ ...state, action.payload ];
     case REMOVE_ATTRIBUTE:
       return state.filter(attr => attr._id !== action.payload);
     default :

@@ -17,7 +17,8 @@ import Input from './common/AttributeInput';
 import AttributeExtraFields from './AttributeExtraFields';
 import Select from './common/SelectField';
 /* Utils */
-import { validateAttribute } from '../utils/validator';
+import { validateAttribute, isDuplicatedField } from '../utils/validator';
+import _ from 'lodash';
 /* Styling */
 import '../styles/attributeForm.scss';
 
@@ -36,6 +37,8 @@ export default class Attribute extends Component {
       contracted: true,
       dtObject: false,
       nameValidationError: '',
+      minValidationError: '',
+      maxValidationError: '',
       rangeValidationError: '',
       precisionValidationError: '',
       accuracyValidationError: '',
@@ -43,16 +46,38 @@ export default class Attribute extends Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+
+    const { attribute } = this.props;
+    const { attributes } = nextProps;
+    if (!_.isEmpty(attribute.name)) {
+      const validName = !isDuplicatedField(this.props.attribute.name, attributes.map(attribute => attribute.name));
+      this.setState({ nameValidationError: validName ? '' : 'Name already exists' });
+    }
+
+  }
+
   /**
    * determines if the component will be updated.
    * */
   shouldComponentUpdate(nextProps, nextState) {
+    const { attribute, setTabsValid } = this.props;
     const { attributedEdited } = nextProps;
-    const { contracted, removeDialogOpen } = nextState;
-    return attributedEdited ?
-      attributedEdited === this.props.attribute._id ||
-      contracted !== this.state.contracted ||
-      removeDialogOpen !== this.state.removeDialogOpen : true;
+    const stateChanged = !_.isEqual(nextState, this.state);
+    const isEditedAttr = _.isEqual(attributedEdited, attribute._id);
+    if (stateChanged || isEditedAttr) {
+      setTabsValid(attribute._id, [
+        'nameValidationError',
+        'minValidationError',
+        'maxValidationError',
+        'rangeValidationError',
+        'precisionValidationError',
+        'accuracyValidationError'
+      ].every(error => _.isEmpty(nextState[ error ])));
+    }
+    return isEditedAttr ||
+      stateChanged || false;
+
   }
 
   /**
@@ -74,10 +99,9 @@ export default class Attribute extends Component {
    * */
   changeFieldValue(field, value) {
     const { changeAttrFieldValue } = this.props;
-    changeAttrFieldValue(this.props.attribute._id, field, value);
-    const { attributes, setTabsValid, attribute } = this.props;
-    const { isValid, errors } = validateAttribute(attribute, attributes);
-    setTabsValid(attribute._id, isValid);
+    const { attribute } = this.props;
+    changeAttrFieldValue(attribute._id, field, value);
+    const errors = validateAttribute(attribute);
     this.setState({ ...errors });
   }
 
@@ -119,15 +143,16 @@ export default class Attribute extends Component {
    * handle the event when user change the attribute format select box and validate the new value
    * */
   handleFormatChange(e, index, format) {
-    if (this.props.attribute.format !== format) {
+    const { attribute } = this.props;
+    if (attribute.format !== format) {
+      this.changeFieldValue('enumerations', []);
+      this.changeFieldValue('format', format);
       if (format === 'NUMBER') {
         this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], '');
       }
       else {
         this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
       }
-      this.changeFieldValue('enumerations', []);
-      this.changeFieldValue('format', format);
     }
   }
 
@@ -148,7 +173,6 @@ export default class Attribute extends Component {
               placeholder="Enter a name"
               onChange={(e, name) => this.changeFieldValue('name', name)}
               value={attribute.name}
-              required
               errMessage={this.state.nameValidationError}
             />
           </div>
@@ -186,7 +210,7 @@ export default class Attribute extends Component {
             <Select
               name="Data Type"
               onChange={this.handleDataTypeChange.bind(this)}
-              items={misc.dataTypes.map(d => ({ value: d, text: d }))}
+              items={misc.dataTypes.map(dataType => ({ value: dataType, text: dataType }))}
               placeholder="Default Value"
               value={attribute.dataType}
             />
@@ -195,7 +219,7 @@ export default class Attribute extends Component {
             <Select
               name="Format"
               onChange={this.handleFormatChange.bind(this)}
-              items={misc.formats.map(f => ({ value: f, text: f }))}
+              items={misc.formats.map(format => ({ value: format, text: format }))}
               placeholder="Default Value"
               value={attribute.format}
               disabled={dtObject}

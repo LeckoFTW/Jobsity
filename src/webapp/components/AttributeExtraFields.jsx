@@ -44,7 +44,7 @@ const AttributeExtraFields = ({ attribute, changeFieldValue, state }) => {
             <EnumerationsList
               name="Values"
               enumerations={enumerations}
-              onDeleteEnum={selectedEnum => changeFieldValue('enumerations', enumerations.filter(e => e !== selectedEnum))}
+              onDeleteEnum={selectedEnum => changeFieldValue('enumerations', enumerations.filter(enumeration => enumeration !== selectedEnum))}
             />
           </div>
         </div>
@@ -60,7 +60,7 @@ const AttributeExtraFields = ({ attribute, changeFieldValue, state }) => {
               onChange={(e, min) => changeFieldValue('min', min)}
               value={min}
               required
-              errMessage={state.rangeValidationError}
+              errMessage={state.minValidationError || state.rangeValidationError}
             />
           </div>
           <div className="col-md-6">
@@ -69,7 +69,7 @@ const AttributeExtraFields = ({ attribute, changeFieldValue, state }) => {
               onChange={(e, max) => changeFieldValue('max', max)}
               value={max}
               required
-              errMessage={state.rangeValidationError}
+              errMessage={state.maxValidationError || state.rangeValidationError}
             />
           </div>
         </div>

@@ -13,27 +13,8 @@ import { TextField } from 'material-ui';
  * Component that renders an Material textInput
  * */
 export default class AttributeInput extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      errorText: ''
-    };
-  }
-
-  handleChange(e, value) {
-    const { onChange, required } = this.props;
-    if (required && !value) {
-      this.setState({ errorText: 'this field is required' });
-    }
-    else {
-      this.setState({ errorText: '' });
-    }
-    onChange(e, value);
-  }
-
   render() {
-    const { name, value, placeholder, className, disabled, errMessage } = this.props;
-    const { errorText } = this.state;
+    const { name, value, placeholder, className, disabled, errMessage , onChange} = this.props;
     return (
       <div className={`attributeFieldContainer ${className ? className : ''}`}>
         <label>{name ? `${name}:` : ':'}</label>
@@ -43,10 +24,10 @@ export default class AttributeInput extends Component {
           hintText={placeholder}
           hintStyle={{ paddingLeft: 10, paddingRight: 10 }}
           className="textInput"
-          onChange={this.handleChange.bind(this)}
+          onChange={onChange}
           value={value}
           disabled={disabled}
-          errorText={errMessage || errorText}
+          errorText={errMessage}
         />
       </div>
     );
