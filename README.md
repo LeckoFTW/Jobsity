@@ -14,10 +14,10 @@ For run the app, in a terminal execute next steps:
 git clone https://github.com/LeckoFTW/jobsity.git
 cd jobsity
 npm install
-node index.js
+npm start
 ```
 you should see the messages : 
-"app running at http://localhost:3001".
+"Project is running at http://localhost:8080/".
 
 Then you will be able to access the app in the displayed url
 

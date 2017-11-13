@@ -22,6 +22,7 @@ import Editor from './components/Editor';
 /* Styling */
 import 'bootstrap/dist/css/bootstrap.css';
 import './styles/app.scss';
+import 'jsoneditor/dist/jsoneditor.css';
 import mockData from './mock';
 
 const store = createStore(reducers, { ...mockData }, applyMiddleware(reduxThunk));

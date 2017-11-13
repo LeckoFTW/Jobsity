@@ -5,52 +5,57 @@
 
 /* Dependencies declaration*/
 /* React */
-import React from 'react';
+import React, {Component} from 'react';
 /* Components */
 import InputFieldWithButton from './common/InputFieldWithButton';
 import EnumerationsList from './common/EnumerationsList';
 import NumberInput from './common/NumberInput';
 import Input from './common/AttributeInput';
 
+
 /**
  * Component that render format:NONE enumerations or format:NUMBER fields
  * */
-const AttributeExtraFields = ({ attribute, changeFieldValue, state }) => {
-  const {
-    dataType,
-    format,
-    enumerations,
-    min,
-    max,
-    unitOfMeasurement,
-    precision,
-    accuracy
-  } = attribute;
-  if (dataType === 'STRING') {
-    if (format === 'NONE') {
-      return (
-        <div className="row">
-          <div className="col-md-6">
-            <InputFieldWithButton
-              name="Enumerations"
-              placeholder="Enter value"
-              onChange={(enumeration) => changeFieldValue('enumerations', [
-                ...enumerations, enumeration
-              ])}
-              className="attDescription"
-            />
-          </div>
-          <div className="col-md-6">
-            <EnumerationsList
-              name="Values"
-              enumerations={enumerations}
-              onDeleteEnum={selectedEnum => changeFieldValue('enumerations', enumerations.filter(enumeration => enumeration !== selectedEnum))}
-            />
-          </div>
+export default class AttributeExtraFields extends Component{
+
+  handleEnumerationInputChange(enumeration){
+    const {attribute : {enumerations}, changeFieldValue} = this.props;
+    const nextEnumerations = [
+      ...enumerations, enumeration
+    ];
+    changeFieldValue('enumerations', nextEnumerations);
+  }
+
+  handleDeleteEnumeration(selectedEnum){
+    const {attribute : {enumerations}, changeFieldValue} = this.props;
+    const nextEnumerations = enumerations.filter(enumeration => enumeration !== selectedEnum);
+    changeFieldValue('enumerations', nextEnumerations);
+  }
+
+  renderFormatNone(enumerations) {
+    return (
+      <div className="row">
+        <div className="col-md-6">
+          <InputFieldWithButton
+            name="Enumerations"
+            placeholder="Enter value"
+            onChange={this.handleEnumerationInputChange.bind(this)}
+            className="attDescription"
+          />
         </div>
-      );
-    }
-    else if (format === 'NUMBER') return (
+        <div className="col-md-6">
+          <EnumerationsList
+            name="Values"
+            enumerations={enumerations}
+            onDeleteEnum={this.handleDeleteEnumeration.bind(this)}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  renderFormatNumber(min, max, unitOfMeasurement, precision, accuracy, changeFieldValue, state) {
+    return (
       <div>
         <div className="row">
           <div className="col-md-6">
@@ -105,8 +110,29 @@ const AttributeExtraFields = ({ attribute, changeFieldValue, state }) => {
         </div>
       </div>
     );
-    else return null;
-  } else return null;
-};
+  }
 
-export default AttributeExtraFields;
+
+  render(){
+    const { attribute : {
+      dataType,
+      format,
+      enumerations,
+      min,
+      max,
+      unitOfMeasurement,
+      precision,
+      accuracy
+    }, changeFieldValue, state } = this.props;
+    if (dataType === 'STRING') {
+      if (format === 'NONE') {
+        return this.renderFormatNone(enumerations);
+      }
+      else if (format === 'NUMBER') {
+        return this.renderFormatNumber(min, max, unitOfMeasurement, precision, accuracy, changeFieldValue, state);
+      }
+      return null;
+    }
+    return null;
+  }
+}

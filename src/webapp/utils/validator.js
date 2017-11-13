@@ -9,7 +9,7 @@ import _ from 'lodash';
  * @param {Object} attribute - Attribute fields
  * */
 export function validateAttribute(attribute) {
-  let errors = {
+  const errors = {
     nameValidationError: '',
     minValidationError: '',
     maxValidationError: '',
@@ -20,16 +20,24 @@ export function validateAttribute(attribute) {
   const { name, min, max, precision, accuracy } = attribute;
   errors.nameValidationError = requiredValidator(name);
   if (attribute.format === 'NUMBER' && attribute.dataType === 'STRING') {
-    errors.minValidationError = numberValidator(min);
-    errors.maxValidationError = numberValidator(max);
-    errors.rangeValidationError = rangeValidator(min, max);
-    if (_.isEmpty(errors.minValidationError) && _.isEmpty(errors.maxValidationError) && _.isEmpty(errors.rangeValidationError)) {
-      errors.precisionValidationError = rangeModValidator(min, max, precision, 'Precision');
-      errors.accuracyValidationError = rangeModValidator(min, max, accuracy, 'Accuracy');
-    }
+    validateRange(errors, min, max);
+    validateRangeMods(errors, min, max, precision, accuracy);
   }
 
   return errors;
+}
+
+function validateRange(errors, min, max) {
+  errors.minValidationError = numberValidator(min);
+  errors.maxValidationError = numberValidator(max);
+  errors.rangeValidationError = rangeValidator(min, max);
+}
+
+function validateRangeMods(errors, min, max, precision, accuracy) {
+  if (_.isEmpty(errors.minValidationError) && _.isEmpty(errors.maxValidationError) && _.isEmpty(errors.rangeValidationError)) {
+    errors.precisionValidationError = rangeModValidator(min, max, precision, 'Precision');
+    errors.accuracyValidationError = rangeModValidator(min, max, accuracy, 'Accuracy');
+  }
 }
 
 
@@ -56,4 +64,3 @@ export function isDuplicatedField(field, array) {
 export function isNumberFormat(value) {
   return value.match(/^\d+(\.+\d{1,})?$/);
 }
-

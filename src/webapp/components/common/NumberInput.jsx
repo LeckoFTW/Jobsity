@@ -20,12 +20,15 @@ export default class NumberInput extends Component {
    * */
   handleChange(e, value) {
     const { onChange } = this.props;
-    if (isNumberFormat(value)) {
-      onChange(e, parseFloat(value));
-    } else {
-      onChange(e, value);
-    }
+    onChange(e, this.validateValue(value));
   }
+
+  validateValue = value => {
+    if (isNumberFormat(value)) {
+      return parseFloat(value);
+    }
+    return value;
+  };
 
   render() {
     const { name, value, placeholder, className, disabled, errMessage } = this.props;

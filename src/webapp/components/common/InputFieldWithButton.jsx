@@ -8,6 +8,8 @@
 import React, { Component } from 'react';
 /* Material design */
 import { TextField, RaisedButton } from 'material-ui';
+/* Utils */
+import _ from 'lodash';
 
 /**
  * Component that renders an Material textInput with a button that handles the component submition
@@ -23,7 +25,7 @@ export default class InputFieldWithButton extends Component {
   handleClick() {
     const { inputValue } = this.state;
     const { onChange } = this.props;
-    if (inputValue.trim() !== '') {
+    if (!_.isEmpty(inputValue)) {
       onChange(inputValue);
       this.setState({ inputValue: '' })
     }

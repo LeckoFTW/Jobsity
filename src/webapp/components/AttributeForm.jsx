@@ -22,10 +22,10 @@ import _ from 'lodash';
 /* Styling */
 import '../styles/attributeForm.scss';
 
-@connect(({ misc, attributes, attributedEdited }, ownProps) => ({
+@connect(({ misc, attributes, attributedEdited: editedAttribute }) => ({
   misc,
   attributes,
-  attributedEdited
+  editedAttribute
 }), { changeAttrFieldValue, setTabsValid, removeAttribute })
 /**
  * Component that show the attribute form and set the validation for all fields
@@ -47,34 +47,20 @@ export default class Attribute extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
-    const { attribute } = this.props;
-    const { attributes } = nextProps;
-    if (!_.isEmpty(attribute.name)) {
-      const validName = !isDuplicatedField(this.props.attribute.name, attributes.map(attribute => attribute.name));
-      this.setState({ nameValidationError: validName ? '' : 'Name already exists' });
-    }
-
+    const { attribute: currentAttribute } = this.props;
+    const { attributes: nextAttributes } = nextProps;
+    this.validateDuplicatedName(currentAttribute, nextAttributes);
   }
 
   /**
    * determines if the component will be updated.
    * */
   shouldComponentUpdate(nextProps, nextState) {
-    const { attribute, setTabsValid } = this.props;
-    const { attributedEdited } = nextProps;
+    const { attribute } = this.props;
+    const { editedAttribute } = nextProps;
     const stateChanged = !_.isEqual(nextState, this.state);
-    const isEditedAttr = _.isEqual(attributedEdited, attribute._id);
-    if (stateChanged || isEditedAttr) {
-      setTabsValid(attribute._id, [
-        'nameValidationError',
-        'minValidationError',
-        'maxValidationError',
-        'rangeValidationError',
-        'precisionValidationError',
-        'accuracyValidationError'
-      ].every(error => _.isEmpty(nextState[ error ])));
-    }
+    const isEditedAttr = _.isEqual(editedAttribute, attribute._id);
+    this.setTabsValidity(stateChanged, isEditedAttr, nextState);
     return isEditedAttr ||
       stateChanged || false;
 
@@ -115,7 +101,7 @@ export default class Attribute extends Component {
         <div className="material-icons" onClick={this.expandAttribute.bind(this)}>expand_more</div>
       </div>
     );
-    else return (
+    return (
       <div className="expandButton">
         <div className="material-icons" onClick={this.expandAttribute.bind(this)}>expand_less</div>
       </div>
@@ -126,33 +112,89 @@ export default class Attribute extends Component {
    * handle the event when user change the attribute datatype select box and validate the new value
    * */
   handleDataTypeChange(e, index, dataType) {
-    if (dataType === 'OBJECT') {
-      this.setState({ dtObject: true });
-      this.changeFieldValue('defaultValue', '');
-      this.changeFieldValue('format', 'NONE');
-      this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
-      this.changeFieldValue('enumerations', []);
-
-    } else {
-      this.setState({ dtObject: false });
-    }
+    this.validateObjectType(dataType);
     this.changeFieldValue('dataType', dataType);
   }
 
   /**
    * handle the event when user change the attribute format select box and validate the new value
    * */
-  handleFormatChange(e, index, format) {
-    const { attribute } = this.props;
-    if (attribute.format !== format) {
-      this.changeFieldValue('enumerations', []);
-      this.changeFieldValue('format', format);
-      if (format === 'NUMBER') {
-        this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], '');
-      }
-      else {
-        this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
-      }
+  handleFormatChange(e, index, nextFormat) {
+    const { format } = this.props.attribute;
+    if (format !== nextFormat) {
+      this.setFormatChangedValues(nextFormat);
+      this.validateFormatNumber(nextFormat);
+    }
+  }
+
+  // Utils
+
+  /**
+   * Validates if the attribute name already exists in the new attirbutes array
+   * */
+  validateDuplicatedName(currentAttribute, nextAttributes) {
+    if (!_.isEmpty(currentAttribute.name)) {
+      const validName = !isDuplicatedField(currentAttribute.name, nextAttributes.map(attribute => attribute.name));
+      this.setState({ nameValidationError: validName ? '' : 'Name already exists' });
+    }
+  }
+
+  /**
+   * Validates if component has changes an set the attribute form validity
+   * */
+  setTabsValidity(stateChanged, isEditedAttr, nextState) {
+    const { attribute, setTabsValid } = this.props;
+    if (stateChanged || isEditedAttr) {
+      setTabsValid(attribute._id, [
+        'nameValidationError',
+        'minValidationError',
+        'maxValidationError',
+        'rangeValidationError',
+        'precisionValidationError',
+        'accuracyValidationError'
+      ].every(error => _.isEmpty(nextState[ error ])));
+    }
+  }
+
+  /**
+   * Validates if the new data type is "OBJECT"
+   * */
+  validateObjectType(dataType) {
+    if (dataType === 'OBJECT') {
+      this.setState({ dtObject: true });
+      this.setTypeObjectValues();
+    } else {
+      this.setState({ dtObject: false });
+    }
+  }
+
+  /**
+   * Sets the form values corresponding to object type
+   * */
+  setTypeObjectValues() {
+    this.changeFieldValue('defaultValue', '');
+    this.changeFieldValue('format', 'NONE');
+    this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
+    this.changeFieldValue('enumerations', []);
+  }
+
+  /**
+   * Resets form values when format did change
+   * */
+  setFormatChangedValues(format) {
+    this.changeFieldValue('enumerations', []);
+    this.changeFieldValue('format', format);
+  }
+
+  /**
+   * Validate if the ner format value is Number and sets the corresponding form values.
+   * */
+  validateFormatNumber(format) {
+    if (format === 'NUMBER') {
+      this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], '');
+    }
+    else {
+      this.changeFieldValue([ 'min', 'max', 'unitOfMeasurement', 'precision', 'accuracy' ], null);
     }
   }
 

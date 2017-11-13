@@ -5,4 +5,7 @@
 .jsoneditor-menu {
   background-color: #555456 !important;
   border-bottom: 1px solid #555456 !important;
+  button {
+    display: none !important;
+  }
 }
